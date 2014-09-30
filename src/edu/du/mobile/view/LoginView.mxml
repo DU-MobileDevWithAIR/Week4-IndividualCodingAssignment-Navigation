@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!--
+  Created by jun on 9/14/14.
+-->
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009"
+    xmlns:s="library://ns.adobe.com/flex/spark">
+
+    <!-- TODO: Make this view work similar to the RegisterView:
+            1. When the submit button is clicked make sure username and password are filled out
+            2. If the fields are filled out make sure username is "student" and password is "password"
+            3. Make sure "password" is all lower case.
+            4. If 1,2,3 and all confirmed, show a success alert. Otherwise show a failed alert
+                    with a message that says why it failed. -->
+
+
+
+    <s:layout>
+        <s:VerticalLayout paddingTop="20" paddingLeft="20" paddingRight="20"
+            clipAndEnableScrolling="true"/>
+    </s:layout>
+
+
+    <s:Label text="Please Login"
+             fontSize="42"
+             paddingLeft="100"
+             paddingBottom="20"/>
+
+    <s:Label text="Username or email"/>
+    <s:TextInput id="username_ti"/>
+
+    <s:Label text="password"
+             paddingTop="20"/>
+    <s:TextInput id="password_ti"
+                 displayAsPassword="true"/>
+
+    <s:Button id="submit_btn"
+              label="Login"
+              left="150"/>
+
+</s:View>
