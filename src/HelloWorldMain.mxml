@@ -22,7 +22,7 @@
             {
                 this.addEventListener( NavigationEvent.GOTO_SCREEN, _onGotoScreen );
 
-                dispatchEvent( new NavigationEvent( NavigationEvent.GOTO_SCREEN, ApplicationScreens.LOGIN ) );
+                dispatchEvent( new NavigationEvent( NavigationEvent.GOTO_SCREEN, ApplicationScreens.REGISTER ) );
             }
 
             private function _onGotoScreen( event:NavigationEvent ):void

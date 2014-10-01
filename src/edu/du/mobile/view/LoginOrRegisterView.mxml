@@ -26,30 +26,55 @@
 
             private function _validateLoginData():Boolean
             {
-                // TODO: Make sure all required fields are filled out
+                var username:String = username_ti.text;
+                var password:String = password_ti.text;
 
-               /* TODO: Make this view work similar to the RegisterView:
-                        1. When the submit button is clicked make sure username and password are filled out
-                        2. If the fields are filled out make sure username is "student" and password is "password"
-                        3. Make sure "password" is all lower case.
-                        4. If 1,2,3 and all confirmed, show a success alert. Otherwise show a failed alert
-                                with a message that says why it failed. */
-
-                return true;
+                if( username == "" || password == "" )
+                {
+                    messagingPopupTitle = "Login Error";
+                    messagingPopupMessage = "Please fill out username/email and password.";
+                    _formValidatedSuccessfully = false;
+                }
+                else if( username.toLowerCase() != "student" || password != "password" )
+                {
+                    messagingPopupTitle = "Login Error";
+                    messagingPopupMessage = "Invalid user/password combination.";
+                    _formValidatedSuccessfully = false;
+                }
+                else
+                {
+                    messagingPopupTitle = "Login " + _defaultMessagingPopupTitle;
+                    messagingPopupMessage = "Login " + _defaultMessagingPopupMessage;
+                    _formValidatedSuccessfully = true;
+                }
+                return _formValidatedSuccessfully;
             }
 
             private function _validateRegistrationData():Boolean
             {
-                // TODO: If the required fields are filled out, display the registerPopup
-                //      with title = "Form Submit Success" and message = "Thank you for registering"
-                //
-                //  OR
-                //
-                //  If all required form fields are not filled out, then display the registerPopup
-                //      with title = "Form Submit Failed"
-                //      and message = "Please fill out all required (*) fields and try again."
+                var username:String = reg_username_ti.text;
+                var email:String = reg_email_ti.text;
+                var password:String = password_ti.text;
+                var confirmPassword:String = confirm_password_ti.text;
+                var agreeToTerms:Boolean = agreeToTerms_chk.selected;
 
-                return true;
+                if( username == ""
+                    || email == ""
+                    || password == ""
+                    || confirmPassword == ""
+                    || !agreeToTerms )
+                {
+                    messagingPopupTitle = "Registration Error";
+                    messagingPopupMessage = "Please fill out all required (*) fields.";
+                    _formValidatedSuccessfully = false;
+                }
+                else
+                {
+                    messagingPopupTitle = "Account Creation " + _defaultMessagingPopupTitle;
+                    messagingPopupMessage = "Account creation " + _defaultMessagingPopupMessage;
+                    _formValidatedSuccessfully = true;
+                }
+                return _formValidatedSuccessfully;
             }
 
             private function _onSubmitClick( event:Event ):void
@@ -57,11 +82,11 @@
 
                 if( this.currentState  == VIEW_STATE_LOGIN )
                 {
-                    _formValidatedSuccessfully = _validateLoginData();
+                    _validateLoginData();
                 }
                 else
                 {
-                    _formValidatedSuccessfully = _validateRegistrationData();
+                    _validateRegistrationData();
                 }
 
                 messagingPopup.open( this, true );
@@ -130,7 +155,8 @@
 
             <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then show this Label and username_ti TextInput. Otherwise, hide it -->
             <s:Label text="Username or email"/>
-            <s:TextInput id="username_ti"/>
+            <s:TextInput id="username_ti"
+                prompt="please enter your username or email"/>
 
             <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then hide this Label and reg_username_ti TextInput. Otherwise, show it -->
             <s:Label text="Username *" includeIn="register"/>
@@ -144,15 +170,15 @@
 
 
             <s:Label text="Password *"/>
-            <s:TextInput id="reg_password_ti"
-                         prompt="please choose a password"
+            <s:TextInput id="password_ti"
+                         prompt="enter a password"
                          displayAsPassword="true"/>
 
 
             <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then hide this Label and confirm_password_ti TextInput. Otherwise, show it -->
             <s:Label text="Confirm password *"/>
             <s:TextInput id="confirm_password_ti"
-                         prompt="please confirm your password"
+                         prompt="confirm the password"
                          displayAsPassword="true"/>
 
             <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then hide these components that have to do with gender selection. Otherwise, show them -->
