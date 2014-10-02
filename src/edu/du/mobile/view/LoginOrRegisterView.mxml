@@ -6,6 +6,16 @@
     xmlns:s="library://ns.adobe.com/flex/spark"
     xmlns:popups="edu.du.mobile.view.popups.*">
 
+    <fx:Style>
+        <!--// SLC: added styles to make the buttony label look link like rather than just text //-->
+        .labelLink {
+            color: blue;
+            fontSize: 30;
+            paddingLeft: 10px;
+            paddingTop: 20px;
+            textDecoration:underline;
+        }
+    </fx:Style>
     <fx:Script>
         <![CDATA[
             import edu.du.mobile.model.constants.ApplicationScreens;
@@ -219,6 +229,7 @@
             <s:Label id="loginOrRegisterToggle"
                 text.login="Create Account"
                 text.register="Log In"
+                styleName="labelLink"
                 buttonMode="true" mouseChildren="false"
                 click="_onLoginOrRegisterToggleClick( event )"/>
 
