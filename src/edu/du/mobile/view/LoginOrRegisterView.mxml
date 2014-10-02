@@ -7,7 +7,7 @@
     xmlns:popups="edu.du.mobile.view.popups.*">
 
     <fx:Style>
-        <!--// SLC: added styles to make the buttony label look link like rather than just text //-->
+        <!--// SLC: added styles to make the buttony label look link-like rather than just text //-->
         .labelLink {
             color: blue;
             fontSize: 30;
@@ -108,7 +108,7 @@
                 if( _formValidatedSuccessfully )
                 {
                     // TODO: Dispatch a NavigationEvent of Type GOTO_SCREEN and pass in the right screenName to go to the LocationDetailsView
-                    dispatchEvent( new NavigationEvent(NavigationEvent.GOTO_SCREEN, ApplicationScreens.LOCATION_DETAILS));
+                    dispatchEvent( new NavigationEvent(NavigationEvent.GOTO_SCREEN, ApplicationScreens.LOCATION_FEED_LIST));
                 }
             }
 
