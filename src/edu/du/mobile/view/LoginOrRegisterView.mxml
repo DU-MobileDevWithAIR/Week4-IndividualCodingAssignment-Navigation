@@ -6,9 +6,20 @@
     xmlns:s="library://ns.adobe.com/flex/spark"
     xmlns:popups="edu.du.mobile.view.popups.*">
 
+    <fx:Style>
+        <!--// SLC: added styles to make the buttony label look link-like rather than just text //-->
+        .labelLink {
+            color: blue;
+            fontSize: 30;
+            paddingLeft: 10px;
+            paddingTop: 20px;
+            textDecoration:underline;
+        }
+    </fx:Style>
     <fx:Script>
         <![CDATA[
             import edu.du.mobile.model.constants.ApplicationScreens;
+            import edu.du.mobile.control.events.NavigationEvent;
 
             import mx.managers.PopUpManager;
 
@@ -22,7 +33,6 @@
             [Bindable] public var messagingPopupMessage:String = _defaultMessagingPopupMessage;
 
             private var _formValidatedSuccessfully:Boolean;
-
 
             private function _validateLoginData():Boolean
             {
@@ -98,6 +108,7 @@
                 if( _formValidatedSuccessfully )
                 {
                     // TODO: Dispatch a NavigationEvent of Type GOTO_SCREEN and pass in the right screenName to go to the LocationDetailsView
+                    dispatchEvent( new NavigationEvent(NavigationEvent.GOTO_SCREEN, ApplicationScreens.LOCATION_FEED_LIST));
                 }
             }
 
@@ -106,8 +117,17 @@
                 trace("Label Click :: Current State =  " + this.currentState );
                 // TODO: Dispatch the NavigationEvent of Type GOTO_SCREEN and pass in the right screenName to toggle between login and register
 
+                switch(this.currentState){
+                    case 'register':
+                        VIEW_STATE_LOGIN;
+                        dispatchEvent( new NavigationEvent(NavigationEvent.GOTO_SCREEN, ApplicationScreens.LOGIN));
+                        break;
+                    case 'login':
+                        VIEW_STATE_REGISTER;
+                        dispatchEvent( new NavigationEvent(NavigationEvent.GOTO_SCREEN, ApplicationScreens.REGISTER));
+                        break;
+                }
             }
-
 
             override public function set data( data:Object ):void
             {
@@ -148,14 +168,15 @@
 
             <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then this accountFormHeader label should say "Login". Otherwise it should say "Create An Account" -->
             <s:Label id="accountFormHeader"
-                     text="Login"
+                     text.login="Login"
+                     text.register="Create An Account"
                      fontSize="42"
                      paddingLeft="100"
                      paddingBottom="20"/>
 
             <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then show this Label and username_ti TextInput. Otherwise, hide it -->
-            <s:Label text="Username or email"/>
-            <s:TextInput id="username_ti"
+            <s:Label text="Username or email" includeIn="login"/>
+            <s:TextInput id="username_ti" includeIn="login"
                 prompt="please enter your username or email"/>
 
             <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then hide this Label and reg_username_ti TextInput. Otherwise, show it -->
@@ -176,15 +197,14 @@
 
 
             <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then hide this Label and confirm_password_ti TextInput. Otherwise, show it -->
-            <s:Label text="Confirm password *"/>
-            <s:TextInput id="confirm_password_ti"
+            <s:Label text="Confirm password *" includeIn="register"/>
+            <s:TextInput id="confirm_password_ti" includeIn="register"
                          prompt="confirm the password"
                          displayAsPassword="true"/>
 
             <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then hide these components that have to do with gender selection. Otherwise, show them -->
-            <s:Label text="gender"/>
-            <s:HGroup id="genderSelect">
-
+            <s:Label text="gender" includeIn="register"/>
+            <s:HGroup id="genderSelect" includeIn="register">
                 <s:RadioButton id="male_rb"
                                group="{ genderRBGroup }"/>
                 <s:Label text="male"/>
@@ -196,7 +216,7 @@
             </s:HGroup>
 
             <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then hide these components that have to do with terms and conditions. Otherwise, show them -->
-            <s:HGroup id="termsAndCond">
+            <s:HGroup id="termsAndCond" includeIn="register">
                 <s:CheckBox id="agreeToTerms_chk"/>
                 <s:Label text="agree to terms *"/>
             </s:HGroup>
@@ -207,7 +227,9 @@
 
             <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then set the label text to "Create Account". Otherwise, set it to "Log In" -->
             <s:Label id="loginOrRegisterToggle"
-                text="Create Account"
+                text.login="Create Account"
+                text.register="Log In"
+                styleName="labelLink"
                 buttonMode="true" mouseChildren="false"
                 click="_onLoginOrRegisterToggleClick( event )"/>
 
