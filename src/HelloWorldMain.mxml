@@ -1,12 +1,18 @@
 <?xml version="1.0"?>
 <!--
   Created by jun on 9/14/14.
+  Modified by Kami on 10/2/14.
 -->
 <s:ViewNavigatorApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
     xmlns:s="library://ns.adobe.com/flex/spark"
     title="Hello World!"
+    firstView="edu.du.mobile.view.LoginOrRegisterView"
     applicationDPI="320"
     applicationComplete="_onApplicationComplete( event )">
+
+    <s:navigationContent>
+        <s:Button label="Home" click="navigator.popToFirstView()"/>
+    </s:navigationContent>
 
     <fx:Script>
         <![CDATA[
