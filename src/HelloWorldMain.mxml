@@ -45,7 +45,7 @@
                         navigator.pushView( LoginOrRegisterView, event.screenName );
                         break;
                     }
-                    default: {};
+                    default: {}
                 }
             }
         ]]>
