@@ -109,11 +109,11 @@
                 // TODO: Dispatch the NavigationEvent of Type GOTO_SCREEN and pass in the right screenName to toggle between login and register
                 if( currentState == VIEW_STATE_LOGIN)
                 {
-                    dispatchEvent( new NavigationEvent( NavigationEvent.GOTO_SCREEN, ApplicationScreens.LOGIN ) );
+                    dispatchEvent( new NavigationEvent( NavigationEvent.GOTO_SCREEN, ApplicationScreens.REGISTER ) );
                 }
                 else
                 {
-                    dispatchEvent( new NavigationEvent( NavigationEvent.GOTO_SCREEN, ApplicationScreens.REGISTER ) );
+                    dispatchEvent( new NavigationEvent( NavigationEvent.GOTO_SCREEN, ApplicationScreens.LOGIN ) );
                 }
             }
 
