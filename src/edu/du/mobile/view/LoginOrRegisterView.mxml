@@ -3,128 +3,128 @@
   Created by jun on 9/14/14.
 -->
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009"
-    xmlns:s="library://ns.adobe.com/flex/spark"
-    xmlns:popups="edu.du.mobile.view.popups.*">
+        xmlns:s="library://ns.adobe.com/flex/spark"
+        xmlns:popups="edu.du.mobile.view.popups.*">
 
     <fx:Script>
         <![CDATA[
         import edu.du.mobile.control.events.NavigationEvent;
         import edu.du.mobile.model.constants.ApplicationScreens;
 
-            import mx.managers.PopUpManager;
+        import mx.managers.PopUpManager;
 
-            public static const VIEW_STATE_LOGIN:String = "login";
-            public static const VIEW_STATE_REGISTER:String = "register";
+        public static const VIEW_STATE_LOGIN:String = "login";
+        public static const VIEW_STATE_REGISTER:String = "register";
 
-            private const _defaultMessagingPopupTitle:String = "Success";
-            private const _defaultMessagingPopupMessage:String = "successful";
+        private const _defaultMessagingPopupTitle:String = "Success";
+        private const _defaultMessagingPopupMessage:String = "successful";
 
-            [Bindable] public var messagingPopupTitle:String = _defaultMessagingPopupTitle;
-            [Bindable] public var messagingPopupMessage:String = _defaultMessagingPopupMessage;
+        [Bindable] public var messagingPopupTitle:String = _defaultMessagingPopupTitle;
+        [Bindable] public var messagingPopupMessage:String = _defaultMessagingPopupMessage;
 
-            private var _formValidatedSuccessfully:Boolean;
+        private var _formValidatedSuccessfully:Boolean;
 
 
-            private function _validateLoginData():Boolean
+        private function _validateLoginData():Boolean
+        {
+            var username:String = username_ti.text;
+            var password:String = password_ti.text;
+
+            if( username == "" || password == "" )
             {
-                var username:String = username_ti.text;
-                var password:String = password_ti.text;
-
-                if( username == "" || password == "" )
-                {
-                    messagingPopupTitle = "Login Error";
-                    messagingPopupMessage = "Please fill out username/email and password.";
-                    _formValidatedSuccessfully = false;
-                }
-                else if( username.toLowerCase() != "student" || password != "password" )
-                {
-                    messagingPopupTitle = "Login Error";
-                    messagingPopupMessage = "Invalid user/password combination.";
-                    _formValidatedSuccessfully = false;
-                }
-                else
-                {
-                    messagingPopupTitle = "Login " + _defaultMessagingPopupTitle;
-                    messagingPopupMessage = "Login " + _defaultMessagingPopupMessage;
-                    _formValidatedSuccessfully = true;
-                }
-                return _formValidatedSuccessfully;
+                messagingPopupTitle = "Login Error";
+                messagingPopupMessage = "Please fill out username/email and password.";
+                _formValidatedSuccessfully = false;
             }
-
-            private function _validateRegistrationData():Boolean
+            else if( username.toLowerCase() != "student" || password != "password" )
             {
-                var username:String = reg_username_ti.text;
-                var email:String = reg_email_ti.text;
-                var password:String = password_ti.text;
-                var confirmPassword:String = confirm_password_ti.text;
-                var agreeToTerms:Boolean = agreeToTerms_chk.selected;
+                messagingPopupTitle = "Login Error";
+                messagingPopupMessage = "Invalid user/password combination.";
+                _formValidatedSuccessfully = false;
+            }
+            else
+            {
+                messagingPopupTitle = "Login " + _defaultMessagingPopupTitle;
+                messagingPopupMessage = "Login " + _defaultMessagingPopupMessage;
+                _formValidatedSuccessfully = true;
+            }
+            return _formValidatedSuccessfully;
+        }
 
-                if( username == ""
+        private function _validateRegistrationData():Boolean
+        {
+            var username:String = reg_username_ti.text;
+            var email:String = reg_email_ti.text;
+            var password:String = password_ti.text;
+            var confirmPassword:String = confirm_password_ti.text;
+            var agreeToTerms:Boolean = agreeToTerms_chk.selected;
+
+            if( username == ""
                     || email == ""
                     || password == ""
                     || confirmPassword == ""
                     || !agreeToTerms )
-                {
-                    messagingPopupTitle = "Registration Error";
-                    messagingPopupMessage = "Please fill out all required (*) fields.";
-                    _formValidatedSuccessfully = false;
-                }
-                else
-                {
-                    messagingPopupTitle = "Account Creation " + _defaultMessagingPopupTitle;
-                    messagingPopupMessage = "Account creation " + _defaultMessagingPopupMessage;
-                    _formValidatedSuccessfully = true;
-                }
-                return _formValidatedSuccessfully;
-            }
-
-            private function _onSubmitClick( event:Event ):void
             {
-
-                if( this.currentState  == VIEW_STATE_LOGIN )
-                {
-                    _validateLoginData();
-                }
-                else
-                {
-                    _validateRegistrationData();
-                }
-
-                messagingPopup.open( this, true );
-                PopUpManager.centerPopUp( messagingPopup );
+                messagingPopupTitle = "Registration Error";
+                messagingPopupMessage = "Please fill out all required (*) fields.";
+                _formValidatedSuccessfully = false;
             }
-
-            private function _onMessagingPopupClose( event:Event ):void
+            else
             {
-                if( _formValidatedSuccessfully )
-                {
-                    // TODO: Dispatch a NavigationEvent of Type GOTO_SCREEN and pass in the right screenName to go to the LocationDetailsView
-                    dispatchEvent( new NavigationEvent( NavigationEvent.GOTO_SCREEN, ApplicationScreens.LOCATION_DETAILS ) );
-                }
+                messagingPopupTitle = "Account Creation " + _defaultMessagingPopupTitle;
+                messagingPopupMessage = "Account creation " + _defaultMessagingPopupMessage;
+                _formValidatedSuccessfully = true;
             }
+            return _formValidatedSuccessfully;
+        }
 
-            private function _onLoginOrRegisterToggleClick( event:Event ):void
+        private function _onSubmitClick( event:Event ):void
+        {
+
+            if( this.currentState  == VIEW_STATE_LOGIN )
             {
-                trace("Label Click :: Current State =  " + this.currentState );
-                // TODO: Dispatch the NavigationEvent of Type GOTO_SCREEN and pass in the right screenName to toggle between login and register
-                if( currentState == VIEW_STATE_LOGIN)
-                {
-                    dispatchEvent( new NavigationEvent( NavigationEvent.GOTO_SCREEN, ApplicationScreens.REGISTER ) );
-                }
-                else
-                {
-                    dispatchEvent( new NavigationEvent( NavigationEvent.GOTO_SCREEN, ApplicationScreens.LOGIN ) );
-                }
+                _validateLoginData();
             }
-
-
-            override public function set data( data:Object ):void
+            else
             {
-                if( data is String && ( data == ApplicationScreens.LOGIN || data == ApplicationScreens.REGISTER ) )
-                {
-                    this.currentState = data.toString();
-                }
+                _validateRegistrationData();
             }
+
+            messagingPopup.open( this, true );
+            PopUpManager.centerPopUp( messagingPopup );
+        }
+
+        private function _onMessagingPopupClose( event:Event ):void
+        {
+            if( _formValidatedSuccessfully )
+            {
+                // TODO: Dispatch a NavigationEvent of Type GOTO_SCREEN and pass in the right screenName to go to the LocationDetailsView
+                dispatchEvent( new NavigationEvent( NavigationEvent.GOTO_SCREEN, ApplicationScreens.LOCATION_DETAILS ) );
+            }
+        }
+
+        private function _onLoginOrRegisterToggleClick( event:Event ):void
+        {
+            trace("Label Click :: Current State =  " + this.currentState );
+            // TODO: Dispatch the NavigationEvent of Type GOTO_SCREEN and pass in the right screenName to toggle between login and register
+            if( currentState == VIEW_STATE_LOGIN)
+            {
+                dispatchEvent( new NavigationEvent( NavigationEvent.GOTO_SCREEN, ApplicationScreens.REGISTER ) );
+            }
+            else
+            {
+                dispatchEvent( new NavigationEvent( NavigationEvent.GOTO_SCREEN, ApplicationScreens.LOGIN ) );
+            }
+        }
+
+
+        override public function set data( data:Object ):void
+        {
+            if( data is String && ( data == ApplicationScreens.LOGIN || data == ApplicationScreens.REGISTER ) )
+            {
+                this.currentState = data.toString();
+            }
+        }
         ]]>
     </fx:Script>
 
@@ -133,9 +133,9 @@
         <s:RadioButtonGroup id="genderRBGroup"/>
 
         <popups:HelloWorldAppPopup id="messagingPopup"
-            title="{ messagingPopupTitle }"
-            message="{ messagingPopupMessage }"
-            close="_onMessagingPopupClose( event )"/>
+                                   title="{ messagingPopupTitle }"
+                                   message="{ messagingPopupMessage }"
+                                   close="_onMessagingPopupClose( event )"/>
     </fx:Declarations>
 
 
@@ -147,11 +147,11 @@
 
     <s:layout>
         <s:VerticalLayout paddingTop="20" paddingBottom="20"
-            paddingLeft="20" paddingRight="20"/>
+                          paddingLeft="20" paddingRight="20"/>
     </s:layout>
 
     <s:Scroller height="100%" width="100%"
-        top="20" left="20" right="20">
+                top="20" left="20" right="20">
 
         <s:VGroup id="accountForm">
 
@@ -165,21 +165,21 @@
 
             <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then show this Label and username_ti TextInput. Otherwise, hide it -->
             <s:Label text="Username or email"
-                         includeIn="login"/>
+                     includeIn="login"/>
             <s:TextInput id="username_ti"
                          includeIn="login"
                          prompt="please enter your username or email"/>
 
             <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then hide this Label and reg_username_ti TextInput. Otherwise, show it -->
             <s:Label text.register="Username *"
-                         includeIn="register"/>
+                     includeIn="register"/>
             <s:TextInput id="reg_username_ti"
                          includeIn="register"
                          prompt="choose a username"/>
 
             <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then hide this Label and reg_email_ti TextInput. Otherwise, show it -->
             <s:Label text.register="Email *"
-                         includeIn="register"/>
+                     includeIn="register"/>
             <s:TextInput id="reg_email_ti"
                          includeIn="register"
                          prompt="please enter your email"/>
@@ -190,7 +190,8 @@
                          displayAsPassword="true"/>
 
             <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then hide this Label and confirm_password_ti TextInput. Otherwise, show it -->
-            <s:Label text.register="Confirm password *" includeIn="register"/>
+            <s:Label text.register="Confirm password *"
+                         includeIn="register"/>
             <s:TextInput id="confirm_password_ti"
                          prompt="confirm the password"
                          includeIn="register"
@@ -200,7 +201,7 @@
             <s:Label text.register="gender"
                      includeIn="register"/>
             <s:HGroup id="genderSelect"
-                     includeIn="register">
+                      includeIn="register">
 
                 <s:RadioButton id="male_rb"
                                group="{ genderRBGroup }"/>
@@ -225,10 +226,10 @@
 
             <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then set the label text to "Create Account". Otherwise, set it to "Log In" -->
             <s:Label id="loginOrRegisterToggle"
-                text.login="Create Account"
-                text.register="Login"
-                buttonMode="true" mouseChildren="false"
-                click="_onLoginOrRegisterToggleClick( event )"/>
+                     text.login="Create Account"
+                     text.register="Login"
+                     buttonMode="true" mouseChildren="false"
+                     click="_onLoginOrRegisterToggleClick( event )"/>
 
         </s:VGroup>
 
