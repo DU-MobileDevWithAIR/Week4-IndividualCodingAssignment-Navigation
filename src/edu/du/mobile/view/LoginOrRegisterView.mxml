@@ -105,8 +105,9 @@
             private function _onLoginOrRegisterToggleClick( event:Event ):void
             {
                 trace("Label Click :: Current State =  " + this.currentState );
+
                 //  After viewing Sclark's and Kamis code I found that I liked Kami's code a bit more so I implemented her if/else statement.
-                //  Kami's original code can be found here: https://github.com/kaminel/Week4-IndividualCodingAssignment-Navigation/blob/master/src/edu/du/mobile/view/LoginOrRegisterView.mxml
+                //  Kami's original code can be found here (10/05/14): https://github.com/kaminel/Week4-IndividualCodingAssignment-Navigation/blob/master/src/edu/du/mobile/view/LoginOrRegisterView.mxml
 
                 if(currentState == VIEW_STATE_LOGIN) {
                     dispatchEvent( new NavigationEvent( NavigationEvent.GOTO_SCREEN, ApplicationScreens.REGISTER ) );
@@ -165,64 +166,63 @@
                      includeIn="login"/>
             <s:TextInput id="username_ti"
                          includeIn="login"
-                         prompt="please enter your username or email"/>
+                         prompt="Please Enter Your Username Or Email"/>
 
             <s:Label text="Username *"
                      includeIn="register"/>
             <s:TextInput id="reg_username_ti"
                          includeIn="register"
-                         prompt="choose a username"/>
+                         prompt="Choose A Username"/>
 
             <s:Label text="Email *"
                      includeIn="register"/>
             <s:TextInput id="reg_email_ti"
                          includeIn="register"
-                         prompt="please enter your email"/>
+                         prompt="Please Enter Your Email"/>
 
 
             <s:Label text="Password *"/>
             <s:TextInput id="password_ti"
-                         prompt="enter a password"
+                         prompt="Enter A Password"
                          displayAsPassword="true"/>
 
 
             <s:Label text="Confirm password *"
                      includeIn="register"/>
             <s:TextInput id="confirm_password_ti"
-                         prompt="confirm the password"
+                         prompt="Confirm The Password"
                          includeIn="register"
                          displayAsPassword="true"/>
 
-            <s:Label text="gender"
+            <s:Label text="Gender"
                      includeIn="register"/>
             <s:HGroup id="genderSelect"
                       includeIn="register">
 
                 <s:RadioButton id="male_rb"
                                group="{ genderRBGroup }"/>
-                <s:Label text="male"/>
+                <s:Label text="Male"/>
 
                 <s:RadioButton id="female_rb"
                                group="{ genderRBGroup }"/>
-                <s:Label text="female"/>
+                <s:Label text="Female"/>
 
             </s:HGroup>
 
             <s:HGroup id="termsAndCond"
                       includeIn="register">
                 <s:CheckBox id="agreeToTerms_chk"/>
-                <s:Label text.register="agree to terms *"/>
+                <s:Label text.register="Agree To Terms *"/>
             </s:HGroup>
 
             <s:Button id="submit_btn"
-                      label="submit"
+                      label="Submit"
                       click="_onSubmitClick( event )"/>
 
 
-            <s:Label id="loginOrRegisterToggle"
-                text.login="Create Account"
-                text.register="Log In"
-                styleName="labelLink"
+            <s:Button id="loginOrRegisterToggle"
+                label.login="Create Account"
+                label.register="Log In"
                 buttonMode="true" mouseChildren="false"
                 click="_onLoginOrRegisterToggleClick( event )"/>
 
