@@ -9,6 +9,7 @@
     <fx:Script>
         <![CDATA[
             import edu.du.mobile.model.constants.ApplicationScreens;
+            import edu.du.mobile.control.events.NavigationEvent;
 
             import mx.managers.PopUpManager;
 
@@ -80,7 +81,7 @@
             private function _onSubmitClick( event:Event ):void
             {
 
-                if( this.currentState  == VIEW_STATE_LOGIN )
+                if( this.currentState == VIEW_STATE_LOGIN )
                 {
                     _validateLoginData();
                 }
@@ -97,15 +98,21 @@
             {
                 if( _formValidatedSuccessfully )
                 {
-                    // TODO: Dispatch a NavigationEvent of Type GOTO_SCREEN and pass in the right screenName to go to the LocationDetailsView
+                    dispatchEvent( new NavigationEvent(NavigationEvent.GOTO_SCREEN, ApplicationScreens.LOCATION_FEED_LIST));
                 }
             }
 
             private function _onLoginOrRegisterToggleClick( event:Event ):void
             {
                 trace("Label Click :: Current State =  " + this.currentState );
-                // TODO: Dispatch the NavigationEvent of Type GOTO_SCREEN and pass in the right screenName to toggle between login and register
+                //  After viewing Sclark's and Kamis code I found that I liked Kami's code a bit more so I implemented her if/else statement.
+                //  Kami's original code can be found here: https://github.com/kaminel/Week4-IndividualCodingAssignment-Navigation/blob/master/src/edu/du/mobile/view/LoginOrRegisterView.mxml
 
+                if(currentState == VIEW_STATE_LOGIN) {
+                    dispatchEvent( new NavigationEvent( NavigationEvent.GOTO_SCREEN, ApplicationScreens.REGISTER ) );
+                    } else {
+                        dispatchEvent( new NavigationEvent( NavigationEvent.GOTO_SCREEN, ApplicationScreens.LOGIN ) );
+                    }
             }
 
 
@@ -146,26 +153,30 @@
 
         <s:VGroup id="accountForm">
 
-            <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then this accountFormHeader label should say "Login". Otherwise it should say "Create An Account" -->
+
             <s:Label id="accountFormHeader"
-                     text="Login"
+                     text.login="Login"
+                     text.register="Create An Account"
                      fontSize="42"
                      paddingLeft="100"
                      paddingBottom="20"/>
 
-            <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then show this Label and username_ti TextInput. Otherwise, hide it -->
-            <s:Label text="Username or email"/>
+            <s:Label text="Username or email"
+                     includeIn="login"/>
             <s:TextInput id="username_ti"
-                prompt="please enter your username or email"/>
+                         includeIn="login"
+                         prompt="please enter your username or email"/>
 
-            <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then hide this Label and reg_username_ti TextInput. Otherwise, show it -->
-            <s:Label text="Username *" includeIn="register"/>
-            <s:TextInput id="reg_username_ti" includeIn="register"
+            <s:Label text="Username *"
+                     includeIn="register"/>
+            <s:TextInput id="reg_username_ti"
+                         includeIn="register"
                          prompt="choose a username"/>
 
-            <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then hide this Label and reg_email_ti TextInput. Otherwise, show it -->
-            <s:Label text="Email *" includeIn="register"/>
-            <s:TextInput id="reg_email_ti" includeIn="register"
+            <s:Label text="Email *"
+                     includeIn="register"/>
+            <s:TextInput id="reg_email_ti"
+                         includeIn="register"
                          prompt="please enter your email"/>
 
 
@@ -175,15 +186,17 @@
                          displayAsPassword="true"/>
 
 
-            <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then hide this Label and confirm_password_ti TextInput. Otherwise, show it -->
-            <s:Label text="Confirm password *"/>
+            <s:Label text="Confirm password *"
+                     includeIn="register"/>
             <s:TextInput id="confirm_password_ti"
                          prompt="confirm the password"
+                         includeIn="register"
                          displayAsPassword="true"/>
 
-            <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then hide these components that have to do with gender selection. Otherwise, show them -->
-            <s:Label text="gender"/>
-            <s:HGroup id="genderSelect">
+            <s:Label text="gender"
+                     includeIn="register"/>
+            <s:HGroup id="genderSelect"
+                      includeIn="register">
 
                 <s:RadioButton id="male_rb"
                                group="{ genderRBGroup }"/>
@@ -195,19 +208,21 @@
 
             </s:HGroup>
 
-            <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then hide these components that have to do with terms and conditions. Otherwise, show them -->
-            <s:HGroup id="termsAndCond">
+            <s:HGroup id="termsAndCond"
+                      includeIn="register">
                 <s:CheckBox id="agreeToTerms_chk"/>
-                <s:Label text="agree to terms *"/>
+                <s:Label text.register="agree to terms *"/>
             </s:HGroup>
 
             <s:Button id="submit_btn"
                       label="submit"
                       click="_onSubmitClick( event )"/>
 
-            <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then set the label text to "Create Account". Otherwise, set it to "Log In" -->
+
             <s:Label id="loginOrRegisterToggle"
-                text="Create Account"
+                text.login="Create Account"
+                text.register="Log In"
+                styleName="labelLink"
                 buttonMode="true" mouseChildren="false"
                 click="_onLoginOrRegisterToggleClick( event )"/>
 
