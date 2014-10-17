@@ -5,117 +5,211 @@
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009"
     xmlns:s="library://ns.adobe.com/flex/spark"
     xmlns:popups="edu.du.mobile.view.popups.*">
-
     <fx:Script>
         <![CDATA[
-            import edu.du.mobile.model.constants.ApplicationScreens;
+        import edu.du.mobile.model.constants.ApplicationScreens;
 
-            import mx.managers.PopUpManager;
+        import mx.managers.PopUpManager;
+        // In order to use NavigationEvent as instructed, it must first be imported
+        import edu.du.mobile.control.events.NavigationEvent;
 
-            public static const VIEW_STATE_LOGIN:String = "login";
-            public static const VIEW_STATE_REGISTER:String = "register";
+        public static const VIEW_STATE_LOGIN:String = "login";
+        public static const VIEW_STATE_REGISTER:String = "register";
+        private const _defaultMessagingPopupTitle:String = "Success";
+        private const _defaultMessagingPopupMessage:String = "successful";
 
-            private const _defaultMessagingPopupTitle:String = "Success";
-            private const _defaultMessagingPopupMessage:String = "successful";
+        [Bindable]
+        public var messagingPopupTitle:String = _defaultMessagingPopupTitle;
+        [Bindable]
+        public var messagingPopupMessage:String = _defaultMessagingPopupMessage;
 
-            [Bindable] public var messagingPopupTitle:String = _defaultMessagingPopupTitle;
-            [Bindable] public var messagingPopupMessage:String = _defaultMessagingPopupMessage;
+        private var _formValidatedSuccessfully:Boolean;
 
-            private var _formValidatedSuccessfully:Boolean;
+        private function _validateLoginData():Boolean {
+            var username:String = username_ti.text;
+            var password:String = password_ti.text;
 
-
-            private function _validateLoginData():Boolean
-            {
-                var username:String = username_ti.text;
-                var password:String = password_ti.text;
-
-                if( username == "" || password == "" )
-                {
-                    messagingPopupTitle = "Login Error";
-                    messagingPopupMessage = "Please fill out username/email and password.";
-                    _formValidatedSuccessfully = false;
-                }
-                else if( username.toLowerCase() != "student" || password != "password" )
-                {
-                    messagingPopupTitle = "Login Error";
-                    messagingPopupMessage = "Invalid user/password combination.";
-                    _formValidatedSuccessfully = false;
-                }
-                else
-                {
-                    messagingPopupTitle = "Login " + _defaultMessagingPopupTitle;
-                    messagingPopupMessage = "Login " + _defaultMessagingPopupMessage;
-                    _formValidatedSuccessfully = true;
-                }
-                return _formValidatedSuccessfully;
+            if (username == "" || password == "") {
+                messagingPopupTitle = "Login Error";
+                messagingPopupMessage = "Please fill out username/email and password.";
+                _formValidatedSuccessfully = false;
             }
-
-            private function _validateRegistrationData():Boolean
-            {
-                var username:String = reg_username_ti.text;
-                var email:String = reg_email_ti.text;
-                var password:String = password_ti.text;
-                var confirmPassword:String = confirm_password_ti.text;
-                var agreeToTerms:Boolean = agreeToTerms_chk.selected;
-
-                if( username == ""
-                    || email == ""
-                    || password == ""
-                    || confirmPassword == ""
-                    || !agreeToTerms )
-                {
-                    messagingPopupTitle = "Registration Error";
-                    messagingPopupMessage = "Please fill out all required (*) fields.";
-                    _formValidatedSuccessfully = false;
-                }
-                else
-                {
-                    messagingPopupTitle = "Account Creation " + _defaultMessagingPopupTitle;
-                    messagingPopupMessage = "Account creation " + _defaultMessagingPopupMessage;
-                    _formValidatedSuccessfully = true;
-                }
-                return _formValidatedSuccessfully;
+            else if (username.toLowerCase() != "student" || password != "password") {
+                messagingPopupTitle = "Login Error";
+                messagingPopupMessage = "Invalid user/password combination.";
+                _formValidatedSuccessfully = false;
             }
-
-            private function _onSubmitClick( event:Event ):void
-            {
-
-                if( this.currentState  == VIEW_STATE_LOGIN )
-                {
-                    _validateLoginData();
-                }
-                else
-                {
-                    _validateRegistrationData();
-                }
-
-                messagingPopup.open( this, true );
-                PopUpManager.centerPopUp( messagingPopup );
+            else {
+                messagingPopupTitle = "Login " + _defaultMessagingPopupTitle;
+                messagingPopupMessage = "Login " + _defaultMessagingPopupMessage;
+                _formValidatedSuccessfully = true;
             }
+            return _formValidatedSuccessfully;
+        }
 
-            private function _onMessagingPopupClose( event:Event ):void
-            {
-                if( _formValidatedSuccessfully )
-                {
-                    // TODO: Dispatch a NavigationEvent of Type GOTO_SCREEN and pass in the right screenName to go to the LocationDetailsView
+        private function _validateRegistrationData():Boolean {
+            /* The validation in our example was wanting. I've recycled
+             * my validation methodology from previous assignments and
+             * modified as necessary. */
+            // Regex borrowed from:
+            // http://help.adobe.com/en_US/ActionScript/3.0_ProgrammingAS3/WS5b3ccc516d4fbf351e63e3d118a9b90204-7f97.html
+            // Match intent:  alpha numeric @ alpha numeric dot something
+            var validEmail = new RegExp("([0-9a-zA-Z]+[-._+&])*[0-9a-zA-Z]+@([-0-9a-zA-Z]+[.])+[a-zA-Z]{2,6}");
+
+            // Regex borrowed from:
+            // http://stackoverflow.com/questions/10568660/actionscript3-regex-expression-for-password-that-
+            // checks-number-of-characters
+            // Match intent: 6-15 characters, one lower, one upper, one number
+            var validPassword = new RegExp("^.*(?=.{6,15})(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).*$");
+
+
+            // Prepare user input for evaluation
+            var evaluateUsername:String = reg_username_ti.text;
+            var evaluateEmail:String = reg_email_ti.text;
+            var evaluatePassword:String = password_ti.text;
+            var evaluatePasswordConfirm:String = confirm_password_ti.text;
+            var evaluateGender:RadioButtonGroup = genderRBGroup as RadioButtonGroup;
+            var evaluateSelectedGender:RadioButton = evaluateGender.selection;
+
+            // Perform basic validation (bool expected from regex matches and string comparison)
+            var isValidEmail:Boolean = evaluateEmail.match(validEmail);
+            var isValidPassword:Boolean = evaluatePassword.match(validPassword);
+            var isMatchingPassword:Boolean = (evaluatePassword == evaluatePasswordConfirm);
+            var isValidTerms:Boolean = agreeToTerms_chk.selected;
+
+            // Setup a container for any errors encountered.
+            var errorsToDisplay:Array = new Array();
+
+            // Prepare error messages
+            var validateUsername:Object = {stringTest: evaluateUsername, expected: "not empty", error: "* Whoops! You need to enter a username."}
+            var validateEmail:Object = {stringTest: isValidEmail, expected: true, error: "* The e-mail address you entered is not valid."};
+            var validatePassword:Object = {stringTest: isValidPassword, expected: true, error: "* Your password does not meet the requirements."};
+            var validatePasswordMatch:Object = {stringTest: isMatchingPassword, expected: true, error: "* The passwords you entered do not match."}
+            var validateGender:Object = {stringTest: evaluateSelectedGender, expected: "not empty", error: "* You need to select a gender."};
+            var validateTerms:Object = {stringTest:isValidTerms, expected:true, error:"* You need to agree to the terms."};
+
+            var evaluateTextValues:Array = [validateUsername, validateEmail, validatePassword, validatePasswordMatch, validateGender, validateTerms];
+
+            for (var i:String in evaluateTextValues) {
+                // Reset previous styles if the user is trying again
+                if (evaluateTextValues[i].expected == true) {
+                    if (evaluateTextValues[i].stringTest !== evaluateTextValues[i].expected) {
+                        errorsToDisplay.push("\n"); // Make it a bit more readable
+                        errorsToDisplay.push(evaluateTextValues[i].error);
+                    }
                 }
-            }
 
-            private function _onLoginOrRegisterToggleClick( event:Event ):void
-            {
-                trace("Label Click :: Current State =  " + this.currentState );
-                // TODO: Dispatch the NavigationEvent of Type GOTO_SCREEN and pass in the right screenName to toggle between login and register
-
-            }
-
-
-            override public function set data( data:Object ):void
-            {
-                if( data is String && ( data == ApplicationScreens.LOGIN || data == ApplicationScreens.REGISTER ) )
-                {
-                    this.currentState = data.toString();
+                else {
+                    if (evaluateTextValues[i].stringTest == null || evaluateTextValues[i].stringTest == '') {
+                        // If the select group has no children selected, it will return null. This checks
+                        // for both null and empty strings (username).
+                        errorsToDisplay.push("\n");
+                        errorsToDisplay.push(evaluateTextValues[i].error);
+                    }
                 }
             }
+            if (errorsToDisplay.length == 0) {
+                // Original (provided) success handling
+                messagingPopupTitle = "Account Creation " + _defaultMessagingPopupTitle;
+                messagingPopupMessage = "Account creation " + _defaultMessagingPopupMessage;
+                _formValidatedSuccessfully = true;
+            }
+            else {
+                // Original (provided) error handling
+                messagingPopupTitle = "Registration Error";
+                messagingPopupMessage = "Please fill out all required (*) fields.";
+                for (var i:String in errorsToDisplay) {
+                    messagingPopupMessage += errorsToDisplay[i];
+                }
+                _formValidatedSuccessfully = false;
+
+            }
+
+            return _formValidatedSuccessfully;
+        }
+
+        private function _onSubmitClick(event:Event):void {
+
+            if (this.currentState == VIEW_STATE_LOGIN) {
+                _validateLoginData();
+            }
+            else {
+                _validateRegistrationData();
+            }
+
+            messagingPopup.open(this, true);
+            PopUpManager.centerPopUp(messagingPopup);
+        }
+
+        private function _onMessagingPopupClose(event:Event):void {
+            if (_formValidatedSuccessfully) {
+                // TO-DONE: Dispatch a NavigationEvent of Type GOTO_SCREEN and pass in the right screenName to go
+                // to the LocationDetailsView
+                /* The following goes to the LOCATION_FEED_LIST rather than details because that is what our
+                 * assignment says to do: https://canvas.du.edu/courses/6766/assignments/31567?module_item_id=109745. */
+                dispatchEvent(new NavigationEvent(NavigationEvent.GOTO_SCREEN, ApplicationScreens.LOCATION_FEED_LIST));
+            }
+        }
+
+        public var validStates:Object = {};
+
+        private function _doViewDiscovery() {
+            /* Get ready for overkill. So, instead of statically calling a constant derived from ApplicationScreens,
+             * I'm iterating through the available constant names in the class. In theory, if we ever extended this
+             * application, we could avoid having to alter this code. */
+            var discoverStates = describeType(ApplicationScreens);
+            var variables:XMLList = discoverStates.constant;
+            for each(var variable:XML in variables) {
+            // Iteration technique borrowed from: http://stackoverflow.com/questions/13294997/as3-iterating-through-
+            // class-variables
+                var fullConstantName = variable.@name;
+                var cleanName = fullConstantName.toLowerCase();
+                if (cleanName.indexOf("_") >= 0) {
+                    /* You have to admit this is a little fun. Here, I'm trying to mimic the naming convention used in
+                     * ApplicationScreens. If the assumption is true that SOMETHING_SOMETHING will always correlate
+                     * to somethingSomething view (based on convention), then this should work. */
+                    var parseName = cleanName.split('_');
+                    for (var i = 1; i < parseName.length; i++) {
+                            var firstLetter:String = (parseName[i].substr(0, 1)).toUpperCase();
+                            var otherLetters:String = parseName[i].substr(1, parseName[i].length);
+                            parseName[i] = firstLetter + otherLetters;
+                    }
+                    cleanName = parseName.join('');
+                }
+                validStates[cleanName] = ApplicationScreens[fullConstantName];
+            }
+        }
+
+        private function _onLoginOrRegisterToggleClick(event:Event):void {
+            // TO-DONE: Dispatch the NavigationEvent of Type GOTO_SCREEN and pass in the right screenName to toggle
+            // between login and register
+            /* Credit where credit is due: In working on Canary (our team project), I was exposed to the proper syntax
+             * for this to-do:
+             * dispatchEvent(new NavigationEvent(NavigationEvent.TYPE, ApplicationScreens.SCREEN)) */
+            for (var id:String in validStates) {
+                if (validStates[id] != this.currentState && validStates[id].indexOf("location") == -1) {
+                    // If there is another view available that isn't related to location stuff, toggle to it.
+                    try {
+                        dispatchEvent(new NavigationEvent(NavigationEvent.GOTO_SCREEN, validStates[id]));
+                        /* It would have been quicker (much... much... much quicker) to use an IF/ELSE or SWITCH with
+                         * dispatchEvent(new NavigationEvent(NavigationEvent.TYPE, ApplicationScreens.SCREEN)
+                         * But... its much more fun to do things dynamically. */
+                    }
+                    catch (event:Error) {
+                        trace("Whoa... something went really really wrong.");
+                    }
+                }
+            }
+        }
+
+
+        override public function set data(data:Object):void {
+            this._doViewDiscovery();
+            if (data is String && ( validStates.hasOwnProperty(String(data)) != -1)) {
+                // If data (login or register) is a valid property within the validStates object then set the state
+                this.currentState = data.toString();
+            }
+        }
         ]]>
     </fx:Script>
 
@@ -128,45 +222,46 @@
             message="{ messagingPopupMessage }"
             close="_onMessagingPopupClose( event )"/>
     </fx:Declarations>
-
-
     <s:states>
         <s:State name="login"/>
         <s:State name="register"/>
     </s:states>
-
-
-    <s:layout>
-        <s:VerticalLayout paddingTop="20" paddingBottom="20"
-            paddingLeft="20" paddingRight="20"/>
-    </s:layout>
-
-    <s:Scroller height="100%" width="100%"
-        top="20" left="20" right="20">
-
-        <s:VGroup id="accountForm">
-
-            <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then this accountFormHeader label should say "Login". Otherwise it should say "Create An Account" -->
+    <s:VGroup width="100%" percentHeight="100" horizontalAlign="center" id="accountGroup" top="20">
+    <!-- In my environment, for whatever reason, the scroller does not behave as expected. I had to use this work around. -->
+        <s:VGroup id="accountForm" percentHeight="98">
             <s:Label id="accountFormHeader"
-                     text="Login"
+                     text.login="Login"
+                     text.register="Create an Account"
                      fontSize="42"
-                     paddingLeft="100"
                      paddingBottom="20"/>
+            <!-- Sorry, removed the paddingLeft="100"... it was too off balance.
+                 Attribute.state accomplishes the to-do -->
+            <!-- TO-DONE: If LoginOrRegisterView.mxml currentState is login, then show this Label and username_ti
+            TextInput. Otherwise, hide it -->
 
-            <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then show this Label and username_ti TextInput. Otherwise, hide it -->
-            <s:Label text="Username or email"/>
-            <s:TextInput id="username_ti"
-                prompt="please enter your username or email"/>
+            <!-- So, technically the assignment says to toggle visibility (hidden versus shown). However, it is more
+            efficient to use excludeFrom which, per Adobe, actually causes the component to be "omitted" based on the
+            state identified (1). Since excludeFrom and includeIn are mutually exclusive, the use of excludeFrom satisfies
+            the visibility requirement without the need to specify two distinct state-contingent attributes
+            (ex: visible.register, visible.login).
 
-            <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then hide this Label and reg_username_ti TextInput. Otherwise, show it -->
-            <s:Label text="Username *" includeIn="register"/>
-            <s:TextInput id="reg_username_ti" includeIn="register"
-                         prompt="choose a username"/>
+            1. http://help.adobe.com/en_US/flex/using/WS2db454920e96a9e51e63e3d11c0bf63611-7ffa.html  -->
 
-            <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then hide this Label and reg_email_ti TextInput. Otherwise, show it -->
-            <s:Label text="Email *" includeIn="register"/>
-            <s:TextInput id="reg_email_ti" includeIn="register"
-                         prompt="please enter your email"/>
+            <s:Label text="Username or email" excludeFrom="register"/>
+                <s:TextInput id="username_ti"
+                    prompt="please enter your username or email"
+                    excludeFrom="register"
+                    />
+            <!-- TO-DONE: If LoginOrRegisterView.mxml currentState is login, then hide this Label and
+            reg_username_ti TextInput. Otherwise, show it -->
+                <s:Label text="Username *" excludeFrom="login"/>
+                <s:TextInput id="reg_username_ti" excludeFrom="login"
+                             prompt="choose a username"/>
+            <!-- TO-DONE: If LoginOrRegisterView.mxml currentState is login, then hide this Label and
+            reg_email_ti TextInput. Otherwise, show it -->
+            <s:Label text="Email *" excludeFrom="login"/>
+                <s:TextInput id="reg_email_ti" excludeFrom="login"
+                             prompt="please enter your email"/>
 
 
             <s:Label text="Password *"/>
@@ -174,45 +269,44 @@
                          prompt="enter a password"
                          displayAsPassword="true"/>
 
+            <!-- TO-DONE: If LoginOrRegisterView.mxml currentState is login, then hide this Label
+            and confirm_password_ti TextInput. Otherwise, show it -->
+            <s:Label text="Confirm password *" excludeFrom="login" />
+                <s:TextInput id="confirm_password_ti"
+                             prompt="confirm the password"
+                             displayAsPassword="true"  excludeFrom="login"/>
+            <!-- TO-DONE: If LoginOrRegisterView.mxml currentState is login, then hide these
+            components that have to do with gender selection. Otherwise, show them -->
+            <s:Label text="gender" excludeFrom="login"/>
+                <s:HGroup id="genderSelect" excludeFrom="login">
+                    <s:RadioButton id="male_rb"
+                                   group="{ genderRBGroup }"/>
+                    <s:Label text="male"/>
+                    <s:RadioButton id="female_rb"
+                                   group="{ genderRBGroup }"/>
+                    <s:Label text="female"/>
+                </s:HGroup>
 
-            <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then hide this Label and confirm_password_ti TextInput. Otherwise, show it -->
-            <s:Label text="Confirm password *"/>
-            <s:TextInput id="confirm_password_ti"
-                         prompt="confirm the password"
-                         displayAsPassword="true"/>
-
-            <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then hide these components that have to do with gender selection. Otherwise, show them -->
-            <s:Label text="gender"/>
-            <s:HGroup id="genderSelect">
-
-                <s:RadioButton id="male_rb"
-                               group="{ genderRBGroup }"/>
-                <s:Label text="male"/>
-
-                <s:RadioButton id="female_rb"
-                               group="{ genderRBGroup }"/>
-                <s:Label text="female"/>
-
-            </s:HGroup>
-
-            <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then hide these components that have to do with terms and conditions. Otherwise, show them -->
-            <s:HGroup id="termsAndCond">
-                <s:CheckBox id="agreeToTerms_chk"/>
-                <s:Label text="agree to terms *"/>
-            </s:HGroup>
-
+                <!-- TO-DONE: If LoginOrRegisterView.mxml currentState is login, then hide these components that
+                have to do with terms and conditions. Otherwise, show them -->
+                <s:HGroup id="termsAndCond" excludeFrom="login">
+                    <s:CheckBox id="agreeToTerms_chk"/>
+                    <s:Label text="agree to terms *"/>
+                </s:HGroup>
             <s:Button id="submit_btn"
                       label="submit"
                       click="_onSubmitClick( event )"/>
-
-            <!-- TODO: If LoginOrRegisterView.mxml currentState is login, then set the label text to "Create Account". Otherwise, set it to "Log In" -->
+            <!-- TO-DONE: If LoginOrRegisterView.mxml currentState is login, then set the label text to "Create Account".
+            Otherwise, set it to "Log In" -->
             <s:Label id="loginOrRegisterToggle"
-                text="Create Account"
+                text.login="Create Account"
+                text.register="Log In"
                 buttonMode="true" mouseChildren="false"
                 click="_onLoginOrRegisterToggleClick( event )"/>
 
         </s:VGroup>
 
-    </s:Scroller>
+    </s:VGroup>
+<s:VScrollBar viewport="{accountGroup}" height="100%"/>
 
 </s:View>
